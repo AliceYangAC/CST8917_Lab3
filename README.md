@@ -20,20 +20,20 @@
 
 ## Part 1: Service Bus
 
-### 1.1 Create a Resource Group
+### Create a Resource Group
 - Name: `rg-serverless-lab3` | Region: Canada Central
 
-### 1.2 Create a Service Bus Namespace
+### Create a Service Bus Namespace
 - Pricing tier: **Standard** (required for topics)
 - Save the Primary Connection String and Primary Key from Shared access policies > RootManageSharedAccessKey
 
-### 1.3 Create the Booking Queue
+### Create the Booking Queue
 - Name: `booking-queue` | Leave defaults
 
-### 1.4 Create the Booking Results Topic
+### Create the Booking Results Topic
 - Name: `booking-results` | Leave defaults
 
-### 1.5 Create Filtered Subscriptions
+### Create Filtered Subscriptions
 
 **confirmed-sub**
 - Subscription name: `confirmed-sub` | Max delivery count: 10
@@ -47,9 +47,9 @@
 
 ## Part 2: Azure Function
 
-### 2.1 Create and Configure the Project
+### Create and Configure the Project
 
-Create a new Azure Functions project (Python 3.11/3.12) using the `function_app.py` from the provided repo.
+Create a new Azure Functions project (Python1/3.12) using the `function_app.py` from the provided repo.
 
 `requirements.txt`:
 ```
@@ -76,18 +76,18 @@ The function exposes two endpoints:
 
 ## Part 3: Logic App
 
-### 3.1 Create the Resource
+### Create the Resource
 - Name: `process-booking` | Plan type: Consumption | Same region as Service Bus
 - Open the designer and select **Blank Logic App**
 
-### 3.2 Trigger: Service Bus Queue
+### Trigger: Service Bus Queue
 
 Search "Service Bus" > select **When a message is received in a queue (auto-complete)**
 
 - Connection string: paste from Part 1
 - Queue name: `booking-queue` | Check every: 30 seconds
 
-### 3.3 Decode the Message
+### Decode the Message
 
 Add a **Compose** action. In the Inputs field, use the expression:
 ```
@@ -95,7 +95,7 @@ base64ToString(triggerBody()?['ContentData'])
 ```
 Rename: `Decode Message`
 
-### 3.4 Parse the Booking JSON
+### Parse the Booking JSON
 
 Add **Parse JSON**. Content: output of Decode Message. Generate schema from this sample:
 ```json
@@ -113,7 +113,7 @@ Add **Parse JSON**. Content: output of Decode Message. Generate schema from this
 ```
 Rename: `Parse Booking Request`
 
-### 3.5 Call the Azure Function
+### Call the Azure Function
 
 Add **Azure Functions** > select your function app > select `check-booking`.
 
@@ -121,7 +121,7 @@ Add **Azure Functions** > select your function app > select `check-booking`.
 
 Rename: `Call Check-Booking Function`
 
-### 3.6 Parse the Function Response
+### Parse the Function Response
 
 Add **Parse JSON**. Content: `Body` from Call Check-Booking Function. Generate schema from this sample:
 ```json
@@ -152,14 +152,14 @@ Then manually edit the schema to allow null on two fields (rejected bookings ret
 ```
 Rename: `Parse Function Response`
 
-### 3.7 Condition
+### Condition
 
 Add a **Condition** action:
 - Left: `status` from Parse Function Response
 - Operator: is equal to
 - Right: `confirmed`
 
-### 3.8 TRUE Branch (Confirmed)
+### TRUE Branch (Confirmed)
 
 **Send Confirmation Email** (Outlook.com > Send an email V2):
 
@@ -192,7 +192,7 @@ Thank you for choosing FleetBook!
 | Label            | `confirmed`                           |
 | Content Type     | `application/json`                    |
 
-### 3.9 FALSE Branch (Rejected)
+### FALSE Branch (Rejected)
 
 **Send Rejection Email** (same connector):
 
