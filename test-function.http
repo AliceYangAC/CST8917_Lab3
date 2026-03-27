@@ -1,0 +1,112 @@
+### FleetBook — Lab 3 Test Requests
+### These tests verify the check-booking Azure Function.
+### Use VS Code REST Client extension: click "Send Request" above each test.
+
+@baseUrl = http://localhost:7071/api
+
+### Health Check
+GET {{baseUrl}}/health
+
+### Test 1: CONFIRMED — sedan in Ottawa (V001 available)
+POST {{baseUrl}}/check-booking
+Content-Type: application/json
+
+{
+    "bookingId": "BK-0001",
+    "customerName": "Jane Doe",
+    "customerEmail": "jane@example.com",
+    "vehicleType": "sedan",
+    "pickupLocation": "Ottawa",
+    "pickupDate": "2026-04-01",
+    "returnDate": "2026-04-05",
+    "notes": "GPS"
+}
+
+### Test 2: REJECTED — sedan in Montreal (V003 unavailable)
+POST {{baseUrl}}/check-booking
+Content-Type: application/json
+
+{
+    "bookingId": "BK-0002",
+    "customerName": "John Smith",
+    "customerEmail": "john@example.com",
+    "vehicleType": "sedan",
+    "pickupLocation": "Montreal",
+    "pickupDate": "2026-04-01",
+    "returnDate": "2026-04-03",
+    "notes": ""
+}
+
+### Test 3: CONFIRMED — SUV in Toronto with add-ons and weekly discount (10 days)
+POST {{baseUrl}}/check-booking
+Content-Type: application/json
+
+{
+    "bookingId": "BK-0003",
+    "customerName": "Alice Brown",
+    "customerEmail": "alice@example.com",
+    "vehicleType": "SUV",
+    "pickupLocation": "Toronto",
+    "pickupDate": "2026-04-10",
+    "returnDate": "2026-04-20",
+    "notes": "child seat, insurance upgrade"
+}
+
+### Test 4: REJECTED — no trucks in Toronto
+POST {{baseUrl}}/check-booking
+Content-Type: application/json
+
+{
+    "bookingId": "BK-0004",
+    "customerName": "Bob Wilson",
+    "customerEmail": "bob@example.com",
+    "vehicleType": "truck",
+    "pickupLocation": "Toronto",
+    "pickupDate": "2026-04-15",
+    "returnDate": "2026-04-17",
+    "notes": ""
+}
+
+### Test 5: CONFIRMED — van in Vancouver with all add-ons + weekly discount
+POST {{baseUrl}}/check-booking
+Content-Type: application/json
+
+{
+    "bookingId": "BK-0005",
+    "customerName": "Carol Davis",
+    "customerEmail": "carol@example.com",
+    "vehicleType": "van",
+    "pickupLocation": "Vancouver",
+    "pickupDate": "2026-04-05",
+    "returnDate": "2026-04-12",
+    "notes": "GPS, child seat, insurance"
+}
+
+### Test 6: CONFIRMED — SUV in Ottawa (V009 available)
+POST {{baseUrl}}/check-booking
+Content-Type: application/json
+
+{
+    "bookingId": "BK-0006",
+    "customerName": "Dave Lee",
+    "customerEmail": "dave@example.com",
+    "vehicleType": "SUV",
+    "pickupLocation": "Ottawa",
+    "pickupDate": "2026-05-01",
+    "returnDate": "2026-05-03",
+    "notes": ""
+}
+
+### Test 7: Invalid request — missing required fields
+POST {{baseUrl}}/check-booking
+Content-Type: application/json
+
+{
+    "customerName": "Test User"
+}
+
+### Test 8: Invalid JSON body
+POST {{baseUrl}}/check-booking
+Content-Type: application/json
+
+not valid json
